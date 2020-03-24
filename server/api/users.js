@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {User} = require('../db/models')
+const {User, Outing, dayTime} = require('../db/models')
 module.exports = router
 
 router.get('/', async (req, res, next) => {
@@ -15,3 +15,25 @@ router.get('/', async (req, res, next) => {
     next(err)
   }
 })
+
+// router.post('/', async (req, res, next) => {
+//   try {
+//     console.log('IS THERE A USER', req.session)
+//     let outing = await Outing.findOne({
+//       where: {
+//         day: req.body.day,
+//         time: req.body.time
+//       }
+//     })
+//     if (!outing){
+//       const {time, day} = req.body
+//       let newOuting= {}
+//       newOuting.time = time
+//       newOuting.day = day
+//       outing = await Outing.create(newOuting)
+//     }
+//     res.json(outing)
+//   } catch (error) {
+//     next(error)
+//   }
+// })

@@ -15,7 +15,8 @@ module.exports = {
   },
   devtool: 'source-map',
   watchOptions: {
-    ignored: /node_modules/
+    poll: 1000
+    // ignored: /node_modules/
   },
   module: {
     rules: [
@@ -23,6 +24,10 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: 'babel-loader'
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader']
       }
     ]
   }

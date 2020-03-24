@@ -1,4 +1,12 @@
 const User = require('./user')
+const Outing = require('./outing')
+const Schedule = require('./schedule')
+const dayTime = require('./dayTime')
+
+Schedule.belongsTo(User)
+User.hasOne(Schedule)
+Outing.belongsToMany(User, {through: 'dayTime'})
+User.belongsToMany(Outing, {through: 'dayTime'})
 
 /**
  * If we had any associations to make, this would be a great place to put them!
@@ -14,5 +22,8 @@ const User = require('./user')
  * instead of: const User = require('../db/models/user')
  */
 module.exports = {
-  User
+  User,
+  Schedule,
+  Outing,
+  dayTime
 }
