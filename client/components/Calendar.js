@@ -97,6 +97,11 @@ export class Calendar extends React.Component {
 
   handleSeeOutings() {
     event.preventDefault()
+    let currentMarkers = this.props.currentMarkers
+    console.log('CURRENT MARKERS', currentMarkers)
+    currentMarkers.map(element => {
+      element.remove()
+    })
     const time = this.state.selectedTime
     const day = this.state.selectedDay.toLocaleDateString()
     console.log('TIME AND DAY', time, day)

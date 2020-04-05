@@ -84,46 +84,32 @@ export class Map extends React.Component {
     // })
   }
 
-  renderMapOutings() {
-    const mapOutings = this.props.outings.mapOutings
-    mapOutings.map(element => {
-      let userMarker = new mapboxgl.Marker({})
-      userMarker.setLngLat(element.location)
-      userMarker.addTo(map)
-    })
-  }
-
   render() {
+    let currentMarkers = []
     if (this.props.outings.mapOutings.length > 0) {
-      this.renderMapOutings()
-      return (
-        <div>
-          <div>
-            <Calendar clickedCoords={this.state.clickedCoords} />
-          </div>
-          <div>
-            {/* <div className='sidebarStyle'>
-          <div>Longitude: {this.state.lng} | Latitude: {this.state.lat} | Zoom: {this.state.zoom}</div> */}
-            {/* </div> */}
-            {/* <div ref={el => (this.mapContainer = el)} className="mapContainer" /> */}
-          </div>
-        </div>
-      )
-    } else {
-      return (
-        <div>
-          <div>
-            <Calendar clickedCoords={this.state.clickedCoords} />
-          </div>
-          <div>
-            {/* <div className='sidebarStyle'>
-      <div>Longitude: {this.state.lng} | Latitude: {this.state.lat} | Zoom: {this.state.zoom}</div> */}
-            {/* </div> */}
-            {/* <div ref={el => (this.mapContainer = el)} className="mapContainer" /> */}
-          </div>
-        </div>
-      )
+      this.props.outings.mapOutings.map(element => {
+        let userMarker = new mapboxgl.Marker({})
+        userMarker.setLngLat(element.location)
+        userMarker.addTo(map)
+        currentMarkers.push(userMarker)
+      })
     }
+    return (
+      <div>
+        <div>
+          <Calendar
+            clickedCoords={this.state.clickedCoords}
+            currentMarkers={currentMarkers}
+          />
+        </div>
+        <div>
+          {/* <div className='sidebarStyle'>
+          <div>Longitude: {this.state.lng} | Latitude: {this.state.lat} | Zoom: {this.state.zoom}</div> */}
+          {/* </div> */}
+          {/* <div ref={el => (this.mapContainer = el)} className="mapContainer" /> */}
+        </div>
+      </div>
+    )
   }
 }
 
