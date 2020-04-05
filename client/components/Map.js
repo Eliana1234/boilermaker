@@ -85,22 +85,10 @@ export class Map extends React.Component {
   }
 
   render() {
-    let currentMarkers = []
-    if (this.props.outings.mapOutings.length > 0) {
-      this.props.outings.mapOutings.map(element => {
-        let userMarker = new mapboxgl.Marker({})
-        userMarker.setLngLat(element.location)
-        userMarker.addTo(map)
-        currentMarkers.push(userMarker)
-      })
-    }
     return (
       <div>
         <div>
-          <Calendar
-            clickedCoords={this.state.clickedCoords}
-            currentMarkers={currentMarkers}
-          />
+          <Calendar clickedCoords={this.state.clickedCoords} map={map} />
         </div>
         <div>
           {/* <div className='sidebarStyle'>

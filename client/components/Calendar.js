@@ -19,7 +19,8 @@ mapboxgl.accessToken =
 
 const defaultState = {
   selectedDay: undefined,
-  selectedTime: undefined
+  selectedTime: undefined,
+  currentMarkers: []
 }
 
 export class Calendar extends React.Component {
@@ -97,10 +98,12 @@ export class Calendar extends React.Component {
 
   handleSeeOutings() {
     event.preventDefault()
-    let currentMarkers = this.props.currentMarkers
-    console.log('CURRENT MARKERS', currentMarkers)
-    currentMarkers.map(element => {
+    console.log('CURRENT MARKERS', this.state.currentMarkers)
+    this.state.currentMarkers.map(element => {
       element.remove()
+    })
+    this.setState({
+      currentMarkers: []
     })
     const time = this.state.selectedTime
     const day = this.state.selectedDay.toLocaleDateString()
@@ -109,6 +112,18 @@ export class Calendar extends React.Component {
       console.log('ARE TIME AND DAY DEFINED', time, day)
       this.props.seeOutings(time, day)
     }
+    let currentMarkers = []
+    if (this.props.outings.mapOutings.length > 0) {
+      this.props.outings.mapOutings.map(element => {
+        let userMarker = new mapboxgl.Marker({})
+        userMarker.setLngLat(element.location)
+        userMarker.addTo(this.props.map)
+        currentMarkers.push(userMarker)
+      })
+    }
+    this.setState({
+      currentMarkers: currentMarkers
+    })
   }
 
   render() {
