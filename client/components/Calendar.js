@@ -2,7 +2,12 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import DayPicker from 'react-day-picker'
-import {newOuting, fetchUserOutings} from '../store/outing'
+import {
+  newOuting,
+  fetchUserOutings,
+  unassignOuting,
+  seeOutings
+} from '../store/outing'
 // import 'react-day-picker/lib/style.css';
 
 const defaultState = {
@@ -16,11 +21,14 @@ export class Calendar extends React.Component {
     this.handleDayClick = this.handleDayClick.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmitOuting = this.handleSubmitOuting.bind(this)
+    this.handleUnassign = this.handleUnassign.bind(this)
+    this.handleSeeOutings = this.handleSeeOutings.bind(this)
 
     this.state = defaultState
   }
 
   componentDidMount() {
+    // localStorage.clear()
     let userId
     let user = localStorage.getItem('user')
     if (user) {
@@ -46,6 +54,12 @@ export class Calendar extends React.Component {
     })
   }
 
+  handleUnassign(outingId) {
+    let currUser = JSON.parse(localStorage.getItem('user'))
+    let userId = currUser.id
+    this.props.unassignOuting(outingId, userId)
+  }
+
   handleSubmitOuting() {
     event.preventDefault()
     let userId
@@ -60,16 +74,35 @@ export class Calendar extends React.Component {
       // }
       userId = 'guest'
     }
+    const clickedCoords = this.props.clickedCoords
+    const lat = clickedCoords.lat
+    const lng = clickedCoords.lng
+    let location = []
+    location.push(lat)
+    location.push(lng)
+    console.log('LOCATION ARRAY', location)
     const time = this.state.selectedTime
     const day = this.state.selectedDay.toLocaleDateString()
     console.log(time, day)
-    console.log('INFO', time, day, userId)
-    this.props.newOuting(time, day, userId)
+    console.log('INFO INCLUDING COORDS', time, day, userId, location)
+    this.props.newOuting(time, day, userId, location)
     // this.setState(defaultState)
+  }
+
+  handleSeeOutings() {
+    event.preventDefault()
+    const time = this.state.selectedTime
+    const day = this.state.selectedDay.toLocaleDateString()
+    console.log('TIME AND DAY', time, day)
+    if (time && day) {
+      console.log('ARE TIME AND DAY DEFINED', time, day)
+      this.props.seeOutings(time, day)
+    }
   }
 
   render() {
     const outings = this.props.outings.outings
+    const mapOutings = this.props.outings.mapOutings
     console.log('PROPS', this.props)
     console.log('STATE', this.state)
     const timeArr = [
@@ -106,11 +139,6 @@ export class Calendar extends React.Component {
               onDayClick={this.handleDayClick}
               selectedDays={this.state.selectedDay}
             />
-            {this.state.selectedDay ? (
-              <p>You clicked {this.state.selectedDay.toLocaleDateString()}</p>
-            ) : (
-              <p>Please select a day.</p>
-            )}
           </div>
           <div>
             <form onSubmit={this.handleSubmit}>
@@ -125,6 +153,19 @@ export class Calendar extends React.Component {
                 </select>
               </label>
             </form>
+            <div>
+              {this.state.selectedDay && this.state.selectedTime ? (
+                <p>
+                  You clicked {this.state.selectedDay.toLocaleDateString()} and{' '}
+                  {this.state.selectedTime}
+                </p>
+              ) : (
+                <p>Please select a day and time.</p>
+              )}
+            </div>
+            <button type="submit" onClick={this.handleSeeOutings}>
+              See outings for this date and time
+            </button>
             <button type="submit" onClick={this.handleSubmitOuting}>
               Submit outing
             </button>
@@ -142,11 +183,11 @@ export class Calendar extends React.Component {
               onDayClick={this.handleDayClick}
               selectedDays={this.state.selectedDay}
             />
-            {this.state.selectedDay ? (
+            {/* {this.state.selectedDay ? (
               <p>You clicked {this.state.selectedDay.toLocaleDateString()}</p>
             ) : (
               <p>Please select a day.</p>
-            )}
+            )} */}
           </div>
           <div>
             <form onSubmit={this.handleSubmit}>
@@ -161,27 +202,43 @@ export class Calendar extends React.Component {
                 </select>
               </label>
             </form>
+            <div>
+              {this.state.selectedDay && this.state.selectedTime ? (
+                <p>
+                  You clicked {this.state.selectedDay.toLocaleDateString()} and{' '}
+                  {this.state.selectedTime}
+                </p>
+              ) : (
+                <p>Please select a day and time.</p>
+              )}
+            </div>
+            <div>
+              <div>
+                My Outings:
+                {outings.map(element => (
+                  <div key={element.id}>
+                    <p>{element.time}</p>
+                    <p>{element.day}</p>
+                    <button
+                      type="submit"
+                      onClick={() => this.handleUnassign(element.id)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* <button type="submit" onClick={this.handleSeeOutings}>
+              See outings for this time
+            </button> */}
             <button type="submit" onClick={this.handleSubmitOuting}>
               Submit outing
             </button>
-          </div>
-          <div>
-            <div>
-              My Outings:
-              {outings.map(element => (
-                <div key={element.id}>
-                  <p>{element.day}</p>
-                  <p>{element.time}</p>
-                  <button
-                    type="submit"
-                    onClick={() => this.handleDelete(element.id)}
-                  >
-                    {' '}
-                    Remove{' '}
-                  </button>
-                </div>
-              ))}
-            </div>
+            <button type="submit" onClick={this.handleSeeOutings}>
+              See outings for this date and time
+            </button>
+            <div />
           </div>
         </div>
       )
@@ -194,8 +251,12 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  newOuting: (time, day, userId) => dispatch(newOuting(time, day, userId)),
-  fetchUserOutings: userId => dispatch(fetchUserOutings(userId))
+  newOuting: (time, day, userId, location) =>
+    dispatch(newOuting(time, day, userId, location)),
+  fetchUserOutings: userId => dispatch(fetchUserOutings(userId)),
+  unassignOuting: (outingId, userId) =>
+    dispatch(unassignOuting(outingId, userId)),
+  seeOutings: (time, day) => dispatch(seeOutings(time, day))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

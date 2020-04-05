@@ -2,25 +2,33 @@ import axios from 'axios'
 
 const initialState = {
   outings: [],
+  mapOutings: [],
   localUser: {}
 }
 
 const ADD_OUTING = 'ADD_OUTING'
 const GET_USER_OUTINGS = 'GET_USER_OUTINGS'
 const SET_LOCAL_USER = 'SET_LOCAL_USER'
+const DELETE_OUTING = 'DELETE_OUTING'
+const SET_OUTINGS = 'SET_OUTINGS'
 
 const addOuting = outing => ({type: ADD_OUTING, outing})
 const getUserOutings = userOutings => ({type: GET_USER_OUTINGS, userOutings})
 const setLocalUser = user => ({type: SET_LOCAL_USER, user})
+const deleteOuting = outing => ({type: DELETE_OUTING, outing})
+const setOutings = outings => ({type: SET_OUTINGS, outings})
 
-export const newOuting = (time, day, userId) => {
+export const newOuting = (time, day, userId, location) => {
   return async dispatch => {
     console.log('HIT THE THUNK')
+    console.log('THUNK DAY', day)
+    console.log('THUNK LOCATION', location)
     try {
       const {data} = await axios.post(`/api/outings`, {
         time: time,
         day: day,
-        userId: userId
+        userId: userId,
+        location: location
       })
       console.log('USER AND OUTING INFO', data.user)
       if (data.user && data.outing) {
@@ -49,12 +57,44 @@ export const fetchUserOutings = userId => {
   }
 }
 
+export const unassignOuting = (outingId, userId) => {
+  return async dispatch => {
+    try {
+      const {data} = await axios.delete(`/api/outings/${outingId}/${userId}`)
+      dispatch(deleteOuting(data))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
+export const seeOutings = (time, day) => {
+  return async dispatch => {
+    try {
+      console.log('HIT THE SEE OUTING THUNK')
+      console.log('DAY AND TIME', day, time)
+      const {data} = await axios.post(`/api/outings/map`, {
+        time: time,
+        day: day
+      })
+      dispatch(setOutings(data))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
 export default function(state = initialState, action) {
   switch (action.type) {
     case ADD_OUTING:
       return {
         ...state,
         outings: [...state.outings, action.outing]
+      }
+    case SET_OUTINGS:
+      return {
+        ...state,
+        mapOutings: action.outings
       }
     case GET_USER_OUTINGS:
       return {
@@ -65,6 +105,13 @@ export default function(state = initialState, action) {
       return {
         ...state,
         localUser: action.user
+      }
+    case DELETE_OUTING:
+      return {
+        ...state,
+        outings: [
+          ...state.outings.filter(element => element.id !== action.outing.id)
+        ]
       }
     default:
       return state

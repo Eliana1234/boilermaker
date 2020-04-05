@@ -7,6 +7,9 @@ const Outing = db.define('outing', {
   },
   day: {
     type: Sequelize.STRING
+  },
+  location: {
+    type: Sequelize.ARRAY(Sequelize.DOUBLE)
   }
   //add location once you have the map set up
 })
