@@ -1,5 +1,5 @@
 import React from 'react'
-// import {connect} from 'react-redux'
+import {connect} from 'react-redux'
 import Calendar from './Calendar'
 
 const mapboxgl = require('mapbox-gl')
@@ -18,6 +18,16 @@ mapboxgl.accessToken =
 // _onClickMap(map, evt) {
 //   console.log(evt.lngLat);
 // }
+
+let map = new mapboxgl.Map({
+  container: 'map',
+  // container: this.mapContainer,
+  style: 'mapbox://styles/mapbox/streets-v10',
+  center: [-74.009, 40.705],
+  zoom: 12
+  // center: [this.state.lng, this.state.lat],
+  // zoom: this.state.zoom
+})
 
 export class Map extends React.Component {
   constructor(props) {
@@ -45,14 +55,6 @@ export class Map extends React.Component {
   // }
 
   componentDidMount() {
-    const map = new mapboxgl.Map({
-      // container: "map",
-      container: this.mapContainer,
-      style: 'mapbox://styles/mapbox/streets-v10',
-      center: [this.state.lng, this.state.lat],
-      zoom: this.state.zoom
-    })
-
     map.on('move', () => {
       this.setState({
         lng: map.getCenter().lng.toFixed(4),
@@ -61,40 +63,78 @@ export class Map extends React.Component {
       })
     })
 
-    map.on('click', e => {
+    var selectorMarker = new mapboxgl.Marker({
+      draggable: true
+    })
+      .setLngLat([this.state.lng, this.state.lat])
+      .addTo(map)
+
+    selectorMarker.on('dragend', () => {
+      var lngLat = selectorMarker.getLngLat()
       this.setState({
-        clickedCoords: e.lngLat
+        clickedCoords: lngLat
       })
-      console.log(this.state.clickedCoords)
+    })
+
+    // map.on('click', e => {
+    //   this.setState({
+    //     clickedCoords: e.lngLat
+    //   })
+    //   console.log(this.state.clickedCoords)
+    // })
+  }
+
+  renderMapOutings() {
+    const mapOutings = this.props.outings.mapOutings
+    mapOutings.map(element => {
+      let userMarker = new mapboxgl.Marker({})
+      userMarker.setLngLat(element.location)
+      userMarker.addTo(map)
     })
   }
 
   render() {
-    console.log('STATE', this.state)
-    return (
-      <div>
+    if (this.props.outings.mapOutings.length > 0) {
+      this.renderMapOutings()
+      return (
         <div>
-          <Calendar clickedCoords={this.state.clickedCoords} />
+          <div>
+            <Calendar clickedCoords={this.state.clickedCoords} />
+          </div>
+          <div>
+            {/* <div className='sidebarStyle'>
+          <div>Longitude: {this.state.lng} | Latitude: {this.state.lat} | Zoom: {this.state.zoom}</div> */}
+            {/* </div> */}
+            {/* <div ref={el => (this.mapContainer = el)} className="mapContainer" /> */}
+          </div>
         </div>
+      )
+    } else {
+      return (
         <div>
-          {/* <div className='sidebarStyle'>
+          <div>
+            <Calendar clickedCoords={this.state.clickedCoords} />
+          </div>
+          <div>
+            {/* <div className='sidebarStyle'>
       <div>Longitude: {this.state.lng} | Latitude: {this.state.lat} | Zoom: {this.state.zoom}</div> */}
-          {/* </div> */}
-          <div ref={el => (this.mapContainer = el)} className="mapContainer" />
+            {/* </div> */}
+            {/* <div ref={el => (this.mapContainer = el)} className="mapContainer" /> */}
+          </div>
         </div>
-      </div>
-    )
+      )
+    }
   }
 }
 
-export default Map
+// export default Map
 
-// const mapStateToProps = state => ({
-//   items: state.item
-// })
+const mapStateToProps = state => ({
+  outings: state.outing
+})
 
 // const mapDispatchToProps = dispatch => ({
 //   fetchItems: () => dispatch(fetchItems())
 // })
 
-// export default connect(mapStateToProps, mapDispatchToProps)(Items)
+export default connect(mapStateToProps, null)(Map)

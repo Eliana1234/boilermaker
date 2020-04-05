@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable react/no-unused-state */
 import React from 'react'
 import {connect} from 'react-redux'
@@ -9,6 +10,12 @@ import {
   seeOutings
 } from '../store/outing'
 // import 'react-day-picker/lib/style.css';
+
+const mapboxgl = require('mapbox-gl')
+// import 'react-day-picker/lib/style.css';
+
+mapboxgl.accessToken =
+  'pk.eyJ1IjoiZWxpYW5hMTIzNCIsImEiOiJjazV3cWQxMG4xeHd1M2RsYjNseHY2NWlqIn0.6Ep1UNJW2hu9AJy9hC9Cxw'
 
 const defaultState = {
   selectedDay: undefined,
@@ -28,7 +35,6 @@ export class Calendar extends React.Component {
   }
 
   componentDidMount() {
-    // localStorage.clear()
     let userId
     let user = localStorage.getItem('user')
     if (user) {
@@ -78,8 +84,8 @@ export class Calendar extends React.Component {
     const lat = clickedCoords.lat
     const lng = clickedCoords.lng
     let location = []
-    location.push(lat)
     location.push(lng)
+    location.push(lat)
     console.log('LOCATION ARRAY', location)
     const time = this.state.selectedTime
     const day = this.state.selectedDay.toLocaleDateString()
@@ -103,6 +109,8 @@ export class Calendar extends React.Component {
   render() {
     const outings = this.props.outings.outings
     const mapOutings = this.props.outings.mapOutings
+
+    console.log('MAP OUTINGS', mapOutings)
     console.log('PROPS', this.props)
     console.log('STATE', this.state)
     const timeArr = [
