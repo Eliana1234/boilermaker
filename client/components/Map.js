@@ -64,7 +64,8 @@ export class Map extends React.Component {
     })
 
     var selectorMarker = new mapboxgl.Marker({
-      draggable: true
+      draggable: true,
+      color: 'red'
     })
       .setLngLat([this.state.lng, this.state.lat])
       .addTo(map)

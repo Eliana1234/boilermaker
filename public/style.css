@@ -34,8 +34,13 @@ form div {
   width: 100vw;
 } */
 
+#page {
+  display: flex;
+  flex-direction: row;
+}
+
 #map {
-  height: 100vh;
+  height: 500vh;
   width: 100vw;
 }
 
