@@ -77,6 +77,7 @@ export const seeOutings = (time, day) => {
         time: time,
         day: day
       })
+      console.log('RETURNED MAP_OUTING DATA', data)
       dispatch(setOutings(data))
     } catch (error) {
       console.log(error)

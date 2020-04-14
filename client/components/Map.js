@@ -32,14 +32,14 @@ let map = new mapboxgl.Map({
 export class Map extends React.Component {
   constructor(props) {
     super(props)
-
     // this.handleClickMap = this.handleClickMap.bind(this)
 
     this.state = {
       lng: -74.009,
       lat: 40.705,
       zoom: 12,
-      clickedCoords: undefined
+      clickedCoords: {lng: -74.009, lat: 40.705},
+      showPopup: false
     }
   }
 
