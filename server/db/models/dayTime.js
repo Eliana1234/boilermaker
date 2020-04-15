@@ -7,6 +7,9 @@ const dayTime = db.define('dayTime', {
   },
   outingId: {
     type: Sequelize.INTEGER
+  },
+  location: {
+    type: Sequelize.ARRAY(Sequelize.DOUBLE)
   }
 })
 

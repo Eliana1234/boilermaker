@@ -40,6 +40,7 @@ export class Calendar extends React.Component {
   }
 
   componentDidMount() {
+    // localStorage.clear()
     let userId
     let user = localStorage.getItem('user')
     if (user) {
@@ -84,6 +85,7 @@ export class Calendar extends React.Component {
       // }
       userId = 'guest'
     }
+    console.log('IS THERE A USER IN SUBMIT OUTINGS', userId)
     const clickedCoords = this.props.clickedCoords
     const lat = clickedCoords.lat
     const lng = clickedCoords.lng

@@ -30,32 +30,41 @@ router.delete('/:outingId/:userId', async (req, res, next) => {
 })
 
 router.post('/', async (req, res, next) => {
+  //REMOVING ALL INSTANCES OF LOCATION FROM OUTING MODEL AND ADDING TO THROUGH TABLE
   try {
-    console.log('IS THERE A USER', req.session)
-    console.log('API LOCATION', req.body.location)
     let outing = await Outing.findOne({
       where: {
         day: req.body.day,
-        time: req.body.time,
-        location: req.body.location
+        time: req.body.time
       }
     })
     if (!outing) {
       let newOuting = {}
       newOuting.time = req.body.time
       newOuting.day = req.body.day
-      newOuting.location = req.body.location
       outing = await Outing.create(newOuting)
     }
     if (req.body.userId === 'guest') {
       let user = await User.create()
-      await outing.addUser(user.id)
+      // await outing.addUser(user.id)
+      user.addOuting(outing, {
+        through: {
+          location: req.body.location
+        }
+      })
       let resObj = {}
       resObj.outing = outing
       resObj.user = user
       res.json(resObj)
     } else {
-      await outing.addUser(req.body.userId)
+      let user = await User.findByPk(req.body.userId)
+      console.log('WHO IS THE USER', req.body.userId)
+      // await outing.addUser(user.id)
+      user.addOuting(outing, {
+        through: {
+          location: req.body.location
+        }
+      })
       res.json(outing)
     }
   } catch (error) {
@@ -67,14 +76,18 @@ router.post('/map', async (req, res, next) => {
   try {
     console.log('THIS IS THE DAY IN THE API ROUTE', req.body.day)
     console.log('THIS IS THE TIME IN THE API ROUTE', req.body.time)
-    let outings = await Outing.findAll({
+    let outing = await Outing.findOne({
       where: {
         day: req.body.day,
         time: req.body.time
       }
     })
-    console.log('THESE ARE THE OUTINGS', outings)
-    res.json(outings)
+    let daytimes = await dayTime.findAll({
+      where: {
+        outingId: outing.id
+      }
+    })
+    res.json(daytimes)
   } catch (error) {
     next(error)
   }
