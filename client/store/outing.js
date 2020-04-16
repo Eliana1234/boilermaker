@@ -3,7 +3,8 @@ import axios from 'axios'
 const initialState = {
   outings: [],
   mapOutings: [],
-  localUser: {}
+  localUser: {},
+  errorMessage: false
 }
 
 const ADD_OUTING = 'ADD_OUTING'
@@ -31,13 +32,21 @@ export const newOuting = (time, day, userId, location) => {
         location: location
       })
       console.log('USER AND OUTING INFO', data.user)
+      // eslint-disable-next-line no-lonely-if
       if (data.user && data.outing) {
         dispatch(setLocalUser(data.user))
         dispatch(addOuting(data.outing))
         const stringifiedUser = JSON.stringify(data.user)
         localStorage.setItem('user', stringifiedUser)
       } else {
-        dispatch(addOuting(data))
+        // eslint-disable-next-line no-lonely-if
+        if (data === 'You have already scheduled for that day and time') {
+          // eslint-disable-next-line no-alert
+          window.alert('You have already scheduled for that day and time')
+          // dispatch(setErrorMessage(data))
+        } else {
+          dispatch(addOuting(data))
+        }
       }
     } catch (err) {
       console.log(err)

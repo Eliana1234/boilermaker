@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable complexity */
 /* eslint-disable react/no-unused-state */
 import React from 'react'
@@ -22,7 +23,8 @@ const defaultState = {
   selectedDay: undefined,
   selectedTime: undefined,
   // currentMarkers: [],
-  showPopup: false
+  showPopup: false,
+  errorMessage: false
 }
 
 let currentMarkers = []
@@ -79,13 +81,8 @@ export class Calendar extends React.Component {
     if (currUser) {
       userId = currUser.id
     } else {
-      // if (localStorage.getItem('user')){
-      //   const user = JSON.parse(localStorage.getItem('user'))
-      //   console.log(user)
-      // }
       userId = 'guest'
     }
-    console.log('IS THERE A USER IN SUBMIT OUTINGS', userId)
     const clickedCoords = this.props.clickedCoords
     const lat = clickedCoords.lat
     const lng = clickedCoords.lng
@@ -94,6 +91,10 @@ export class Calendar extends React.Component {
     location.push(lat)
     const time = this.state.selectedTime
     const day = this.state.selectedDay.toLocaleDateString()
+    console.log(
+      'HERE ARE THE OUTINGS IN SUBMIT OUTINGS FUNC',
+      this.props.outings.outings
+    )
     this.props.newOuting(time, day, userId, location)
   }
 
@@ -104,27 +105,11 @@ export class Calendar extends React.Component {
         element.remove()
       })
     }
-    // console.log('CURRENT MARKER STATE', this.state.currentMarkers)
-    // this.state.currentMarkers.map(element => {
-    //   element.remove()
-    // })
     const time = this.state.selectedTime
     const day = this.state.selectedDay.toLocaleDateString()
     if (time && day) {
       this.props.seeOutings(time, day)
     }
-    //   let newMarkers = [];
-    //   if (this.props.outings.mapOutings.length > 0){
-    //   this.props.outings.mapOutings.map(element => {
-    //     console.log('INNER NEW OUTINGS ARRAY', newMarkers)
-    //     let userMarker = new mapboxgl.Marker({})
-    //     userMarker.setLngLat(element.location)
-    //     newMarkers.push(userMarker)
-    //     this.setState({
-    //       currentMarkers: newMarkers
-    //     })
-    //   })
-    //  }
   }
 
   render() {
@@ -141,6 +126,7 @@ export class Calendar extends React.Component {
       })
     }
     const timeArr = [
+      'Please select a time',
       '6:00 AM',
       '7:00 AM',
       '8:00 AM',

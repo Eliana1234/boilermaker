@@ -46,7 +46,6 @@ router.post('/', async (req, res, next) => {
     }
     if (req.body.userId === 'guest') {
       let user = await User.create()
-      // await outing.addUser(user.id)
       user.addOuting(outing, {
         through: {
           location: req.body.location
@@ -58,14 +57,22 @@ router.post('/', async (req, res, next) => {
       res.json(resObj)
     } else {
       let user = await User.findByPk(req.body.userId)
-      console.log('WHO IS THE USER', req.body.userId)
-      // await outing.addUser(user.id)
-      user.addOuting(outing, {
-        through: {
-          location: req.body.location
+      let daytime = await dayTime.findOne({
+        where: {
+          userId: user.id,
+          outingId: outing.id
         }
       })
-      res.json(outing)
+      if (!daytime) {
+        user.addOuting(outing, {
+          through: {
+            location: req.body.location
+          }
+        })
+        res.json(outing)
+      } else {
+        res.json('You have already scheduled for that day and time')
+      }
     }
   } catch (error) {
     next(error)
