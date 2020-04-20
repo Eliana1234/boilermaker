@@ -36,7 +36,7 @@ export class Header extends React.Component {
       <div>
         <Wrapper>
           <div className="parentContainer">
-            <div className="title">SafeWalk</div>
+            <div className="title">SafeWalk_TEST</div>
             <div className="popblock">
               <button
                 type="submit"
