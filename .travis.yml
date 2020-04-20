@@ -15,14 +15,16 @@ install:
 before_script:
   - psql -c 'create database "outing-test";' -U postgres # remember to change this name if you change it elsewhere (e.g. package.json)
 script:
-  - npm test             # test the code
+  - npm test # test the code
   - npm run build-client # make the bundle
-
-# before_deploy:
-#   - rm -rf node_modules # omit from the tarball, since we skip cleanup
-# deploy:
-#   skip_cleanup: true # prevents travis from deleting the build
-#   provider: heroku
-#   app: YOUR-HEROKU-APP-NAME-HERE # see README
-#   api_key:
-#     secure: YOUR-***ENCRYPTED***-API-KEY-HERE # see README
+before_deploy: # omit node_modules, since we set skip_cleanup below
+  - rm -rf node_modules
+deploy: # see README for details on these keys
+  # prevents travis from deleting the build
+  skip_cleanup: true
+  provider: heroku
+  # app should be your heroku app name; see README
+  app: safewalk-demo-version
+  # the secure key indicates an encrypted value; see README
+  api_key:
+    secure: RLO5Pgsu5J6p2cvfxNuwrIFOjNmYnW4I9BILWxpMPsHI5/q1U4tdF/5lib/INJYS3VlDI48r9j3l3rSk4jqX2YYcFjoKkghCwwMZjNqGI3/qfhBW9uPM+DpTJ4/N8Fz+v2DLgMo+haxROO5Zx3s7zU5S/OxbSSM1NviFVEHa0j0kFNk8wiS6/IYmfzlCax5GR1avoB1Mssxo4s2AItTE5oDQPOroNQV4FwkT4IRHn6+eB8h2VP07JiJu1eTeYrnheRvRPkCRkrePX653jRQP/CtmNhQEENdnTytWyKvGnp32Uimse1RRVjJtY4/6UM3XzIr/AJDsgWjbu5wYWQSZo78HMYDAxqzgHFZTFiOWFEp4XRyE+vR/BvnEbr6iAUZZdzipEx91qcSoSV3rtFzd7k2Wdfv+byhd2Wbqj0J/up7XIB4chOaTCglg/7+86NLnQ2Op1G8SG/1Rl7jIYpp/U8pV/rxvqa0v01hgjixRVwgbfHnXCFzCWCbKtCPe1367/wmaa4Na2C9bneSWgxxsJs0Z/0TJBIHfkbRZKnwCHv7Ww0BWNrO9PLRkDp95K2FID8Gsk+A/qsgSRyxjQWk1+vCO+HTAr2NPFbYUn7+GQNU/5Htv7cJxYDyO2qkUm46u1NYtDW6Ws1clwxY156+dbM41p3mTA5R2Yt+4bT8t6Bw=
