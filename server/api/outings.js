@@ -89,12 +89,16 @@ router.post('/map', async (req, res, next) => {
         time: req.body.time
       }
     })
-    let daytimes = await dayTime.findAll({
-      where: {
-        outingId: outing.id
-      }
-    })
-    res.json(daytimes)
+    if (outing) {
+      let daytimes = await dayTime.findAll({
+        where: {
+          outingId: outing.id
+        }
+      })
+      res.json(daytimes)
+    } else {
+      res.json([])
+    }
   } catch (error) {
     next(error)
   }
